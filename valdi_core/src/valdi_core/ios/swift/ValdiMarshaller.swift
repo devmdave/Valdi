@@ -302,8 +302,8 @@ open class ValdiMarshaller {
     }
     public func getString(_ index: Int) throws -> String {
         guard let strbox = SwiftValdiMarshaller_GetString(marshallerCpp, index) else {
-            try checkError()
-            throw ValdiError.runtimeError("ValdiMarshaller.getString unknown error")
+            // SwiftValdiMarshaller_GetString returns nullptr for empty string
+            return ""
         }
         defer { SwiftValdiMarshaller_ReleaseStringBox(strbox) }
         let strview = SwiftValdiMarshaller_StringViewFromStringBox(strbox)
