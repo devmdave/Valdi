@@ -58,6 +58,38 @@ string_flag(
     visibility = ["//visibility:public"],
 )
 
+string_flag(
+    name = "js_bytecode_format",
+    build_setting_default = "quickjs",
+    values = [
+        "none",
+        "hermes",
+        "quickjs",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "js_bytecode_format_none",
+    flag_values = {
+        ":js_bytecode_format": "none",
+    },
+)
+
+config_setting(
+    name = "js_bytecode_format_hermes",
+    flag_values = {
+        ":js_bytecode_format": "hermes",
+    },
+)
+
+config_setting(
+    name = "js_bytecode_format_quickjs",
+    flag_values = {
+        ":js_bytecode_format": "quickjs",
+    },
+)
+
 config_setting(
     name = "upload_assets",
     flag_values = {

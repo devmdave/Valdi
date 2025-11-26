@@ -319,11 +319,11 @@ cc_library(
     strip_include_prefix = "src",
     visibility = ["//visibility:public"],
     deps = [
-        # Removed Hermes as it increases compilation time significantly
-        # and we don't yet bundle hermes bytecode.
-        # ":valdi_hermes",
         ":valdi_quickjs",
-    ],
+    ] + select({
+        "//bzl/valdi:js_bytecode_format_hermes": [":valdi_hermes"],
+        "//conditions:default": [],
+    }),
 )
 
 cc_library(
@@ -827,6 +827,21 @@ cc_binary(
     deps = [
         ":valdi_runtime_with_vm",
         ":valdi_standalone_runtime",
+    ],
+)
+
+cc_binary(
+    name = "startup_benchmark",
+    srcs = glob([
+        "src/valdi/startup_benchmark/**/*.cpp",
+    ]),
+    linkstatic = True,
+    deps = [
+        ":valdi_runtime_with_vm",
+        ":valdi_standalone_runtime",
+        "//src/valdi_modules/src/valdi/valdi_core:valdi_core_native",
+        "//tsn",
+        "//valdi/testdata/resources/modules/startup_benchmark:startup_benchmark_native",
     ],
 )
 

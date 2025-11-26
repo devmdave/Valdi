@@ -268,7 +268,7 @@ JavaScriptRuntime::JavaScriptRuntime(IJavaScriptBridge& jsBridge,
       _enableStackTraceCapture(enableDebugger),
       _platformType(platformType),
       _isWorker(isWorker) {
-    VALDI_DEBUG(*_logger, "++JavaScriptRuntime({})", static_cast<void*>(this));
+    VALDI_DEBUG(*_logger, "Creating JavaScriptRuntime (instance ptr {})", static_cast<void*>(this));
 
     auto queueName = STRING_LITERAL(isWorker ? "Valdi JS Worker Thread" : "Valdi JS Thread");
     if (jsBridge.requiresDedicatedThread()) {
@@ -313,7 +313,7 @@ void JavaScriptRuntime::postInit() {
 }
 
 JavaScriptRuntime::~JavaScriptRuntime() {
-    VALDI_DEBUG(*_logger, "--JavaScriptRuntime({})", static_cast<void*>(this));
+    VALDI_DEBUG(*_logger, "Destroying JavaScriptRuntime (instance ptr {})", static_cast<void*>(this));
     fullTeardown();
 }
 

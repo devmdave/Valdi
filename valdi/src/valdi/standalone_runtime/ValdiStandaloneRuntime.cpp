@@ -296,6 +296,10 @@ RuntimeManager& ValdiStandaloneRuntime::getRuntimeManager() const {
     return *_runtimeManager;
 }
 
+const Ref<StandaloneMainQueue>& ValdiStandaloneRuntime::getMainQueue() const {
+    return _mainQueue;
+}
+
 template<typename T>
 static Result<T> withJsContext(IJavaScriptBridge* jsBridge, Valdi::Function<Result<T>(IJavaScriptContext&)> cb) {
     auto& logger = ConsoleLogger::getLogger();

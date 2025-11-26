@@ -46,7 +46,7 @@ public:
 };
 } // namespace
 
-int runValdiStandalone(const StandaloneArguments& arguments) {
+Ref<ValdiStandaloneRuntime> createValdiStandaloneRuntime(const StandaloneArguments& arguments) {
     ConsoleLogger::getLogger().setMinLogType(arguments.logLevel);
 
     auto resourceLoader = Valdi::makeShared<StandaloneResourceLoader>();
@@ -56,6 +56,10 @@ int runValdiStandalone(const StandaloneArguments& arguments) {
 
     auto mainQueue = Valdi::makeShared<StandaloneMainQueue>();
     auto tweakValueProvider = Valdi::makeShared<TestTweakValueProvider>();
+    if (arguments.enableTSN) {
+        tweakValueProvider->config.setMapValue(StringBox::fromCString("VALDI_ENABLE_TSN"), Value(true));
+    }
+
     auto runtime = ValdiStandaloneRuntime::create(arguments.enableDebuggerService,
                                                   !arguments.enableHotReloader,
                                                   false,
@@ -72,9 +76,15 @@ int runValdiStandalone(const StandaloneArguments& arguments) {
         runtime->getRuntimeManager().registerModuleFactoriesProvider(moduleFactoriesProvider);
     }
 
+    return runtime;
+}
+
+int runValdiStandalone(const StandaloneArguments& arguments) {
+    auto runtime = createValdiStandaloneRuntime(arguments);
+
     runtime->evalScript(arguments.scriptPath, arguments.jsArguments);
 
-    return mainQueue->runIndefinitely();
+    return runtime->getMainQueue()->runIndefinitely();
 }
 
 } // namespace Valdi

@@ -28,7 +28,6 @@ ios:
 
 android:
   class_path: com.snap.modules
-  js_bytecode_format: quickjs
   output:
     base: {ANDROID_OUTPUT_BASE}
     debug_path: debug

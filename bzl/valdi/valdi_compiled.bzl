@@ -252,6 +252,10 @@ valdi_compiled = rule(
             doc = "Defines how the localized strings should be processed",
             default = "@valdi//bzl/valdi:localization_mode",
         ),
+        "js_bytecode_format": attr.label(
+            doc = "The JavaScript Bytecode format to use for the module",
+            default = "@valdi//bzl/valdi:js_bytecode_format",
+        ),
         "prepared_upload_artifact_name": attr.string(
             doc = "The name for a prepared artifact meant for uploading the assets",
         ),
@@ -327,6 +331,7 @@ def _invoke_valdi_compiler(ctx, module_name, module_yaml):
     (explicit_input_list_file, all_inputs, module_directory) = _prepare_explicit_input_list_file(ctx, module_yaml)
 
     localization_mode = ctx.attr.localization_mode[BuildSettingInfo].value
+    js_bytecode_format = ctx.attr.js_bytecode_format[BuildSettingInfo].value
 
     #############
     # 3. Gather all outputs produced by the Valdi compiler
@@ -349,7 +354,7 @@ def _invoke_valdi_compiler(ctx, module_name, module_yaml):
         valdi_copts.append("--config-value")
         valdi_copts.append("module_upload_base_url={}".format(module_upload_base_url))
 
-    args = _prepare_arguments(ctx.actions.args(), ctx.attr.log_level[BuildSettingInfo].value, localization_mode, config_yaml_file, explicit_input_list_file, module_name, base_output_dir, disable_downloadable_assets, ctx.configuration.default_shell_env, prepared_upload_artifact_file, ctx.attr.inline_assets, valdi_copts, enable_web, disable_minify_web)
+    args = _prepare_arguments(ctx.actions.args(), ctx.attr.log_level[BuildSettingInfo].value, localization_mode, js_bytecode_format, config_yaml_file, explicit_input_list_file, module_name, base_output_dir, disable_downloadable_assets, ctx.configuration.default_shell_env, prepared_upload_artifact_file, ctx.attr.inline_assets, valdi_copts, enable_web, disable_minify_web)
 
     #############
     # 5. Set up the action that executes the Valdi compiler
@@ -1004,7 +1009,7 @@ def _declare_files(ctx, paths):
 def _declare_directories(ctx, paths):
     return [ctx.actions.declare_directory(path) for path in paths]
 
-def _prepare_arguments(args, log_level, localization_mode, config_yaml_file, explicit_input_list_file, module_name, base_output_dir, disable_downloadable_assets, shell_env, prepared_upload_artifact_file, inline_assets, additional_copts, enable_web, disable_minify_web):
+def _prepare_arguments(args, log_level, localization_mode, js_bytecode_format, config_yaml_file, explicit_input_list_file, module_name, base_output_dir, disable_downloadable_assets, shell_env, prepared_upload_artifact_file, inline_assets, additional_copts, enable_web, disable_minify_web):
     """ Prepare arguments for the Valdi compiler invocation. """
 
     args.use_param_file("@%s", use_always = True)
@@ -1066,6 +1071,8 @@ def _prepare_arguments(args, log_level, localization_mode, config_yaml_file, exp
     args.add("--config-value", "android.output.release_path=release")
     args.add("--config-value", "android.output.metadata_path=.")
     args.add("--config-value", "android.output.build_file_enabled=false")
+    if js_bytecode_format != "none":
+        args.add("--config-value", "android.js_bytecode_format={}".format(js_bytecode_format))
 
     # iOS
     args.add("--config-value", "ios.codegen_enabled=true")
