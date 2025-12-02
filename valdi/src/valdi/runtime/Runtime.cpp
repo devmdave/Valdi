@@ -40,6 +40,7 @@
 
 #include "valdi/RuntimeMessageHandler.hpp"
 #include "valdi/runtime/Runtime.hpp"
+#include "valdi/runtime/ErrorCodes.hpp"
 #include "valdi/runtime/ValdiRuntimeTweaks.hpp"
 #include "valdi_core/cpp/Resources/ResourceId.hpp"
 #include "valdi_core/cpp/Utils/LoggerUtils.hpp"
@@ -685,10 +686,9 @@ Value Runtime::getColorPalette() {
 }
 
 void Runtime::onUncaughtJsError(const StringBox& moduleName, const Error& error) {
-    static const int kValdiUncaughtErrorCode = 1;
     if (_runtimeMessageHandler != nullptr) {
         auto flattenedError = error.flatten();
-        _runtimeMessageHandler->onUncaughtJsError(kValdiUncaughtErrorCode,
+        _runtimeMessageHandler->onUncaughtJsError(error.getErrorCode(),
                                                   moduleName,
                                                   flattenedError.getMessage().slowToString(),
                                                   flattenedError.getStack().slowToString());
